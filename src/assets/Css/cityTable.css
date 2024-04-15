@@ -1,0 +1,9 @@
+/* Add responsive styles */
+@media screen and (max-width: 768px) {
+  .max-w-6xl {
+    max-width: 100%;
+  }
+  .overflow-x-auto {
+    overflow-x: auto;
+  }
+}
