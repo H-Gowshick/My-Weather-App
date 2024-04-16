@@ -21,7 +21,7 @@ const CityTable: React.FC = () => {
   const [searchInput, setSearchInput] = useState<string>(""); 
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false); 
+
 
   // Define a ref for the intersection observer
   const observer = useRef<IntersectionObserver>();
