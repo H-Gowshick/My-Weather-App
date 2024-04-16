@@ -218,10 +218,7 @@ const CityTable: React.FC = () => {
     }
   };
 
-  // Function to toggle dropdown state
-  // const handleDropdownToggle = () => {
-  //   setDropdownOpen(!dropdownOpen); // Toggle dropdown state
-  // };
+
 
   // Return the JSX for the CityTable component
   return (
