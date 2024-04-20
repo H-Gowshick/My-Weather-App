@@ -75,7 +75,7 @@ function WeatherPage() {
       try {
         // Fetch current weather data
         const weatherResponse = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=YOUR_API_KEY&units=metric`
+          `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=0e0ca64278d9c08173974c0f7236f498&units=metric`
         );
         if (!weatherResponse.ok) {
           throw new Error("Failed to fetch weather data");
@@ -85,7 +85,7 @@ function WeatherPage() {
 
         // Fetch forecast data
         const forecastResponse = await fetch(
-          `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=YOUR_API_KEY&units=metric`
+          `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=0e0ca64278d9c08173974c0f7236f498&units=metric`
         );
         if (!forecastResponse.ok) {
           throw new Error("Failed to fetch forecast data");
