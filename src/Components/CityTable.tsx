@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../assets/Css/cityTable.css";
 
-// Define the structure of a City object
+// structure of a City object
 interface City {
   name: string;
   timezone: string;
@@ -10,31 +10,28 @@ interface City {
   country_name_en: string;
 }
 
-// Define the CityTable component
+// CityTable component
 const CityTable: React.FC = () => {
-  // Define state variables using the useState hook
   const [cities, setCities] = useState<City[]>([]);
-  const [filteredCities, setFilteredCities] = useState<City[]>([]); 
+  const [filteredCities, setFilteredCities] = useState<City[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
-  const [searchInput, setSearchInput] = useState<string>(""); 
+  const [searchInput, setSearchInput] = useState<string>("");
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false); 
-
-  // Define a ref for the intersection observer
   const observer = useRef<IntersectionObserver>();
+  const navigate = useNavigate();
 
-  // Function to fetch city data from the API
+  // fetch city data from the API
   const fetchCityData = async (pageNumber: number): Promise<City[]> => {
     // Initialize an array to store fetched cities
     const allCities: City[] = [];
-    // Define pagination parameters
+    //  pagination parameters
     const limit = 50;
     const offset = (pageNumber - 1) * limit;
     try {
-      // Fetch data from the API
+      // Fetching data from the API
       const response = await fetch(
         `https://public.opendatasoft.com/api/records/1.0/search/?dataset=geonames-all-cities-with-a-population-1000&rows=${limit}&start=${offset}`
       );
@@ -73,14 +70,14 @@ const CityTable: React.FC = () => {
           "An error occurred while loading the data. Please try again later."
         ); // Alert user if an error occurs during data loading
       }
-      setLoading(false); // Set loading state to false after data loading
+      setLoading(false); 
     };
 
     // Check if there are more data to load and not currently loading
     if (hasMore && !loading) {
       loadData(); // Load more data
     }
-  }, [page]); 
+  }, [page]);
 
   // useEffect to observe intersection for infinite scrolling
   useEffect(() => {
@@ -88,7 +85,7 @@ const CityTable: React.FC = () => {
       observer.current.disconnect();
     }
 
-    // Create a new observer
+    // Creating a new observer
     observer.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && hasMore) {
         setPage((prevPage) => prevPage + 1);
@@ -108,12 +105,11 @@ const CityTable: React.FC = () => {
     };
   }, [cities, hasMore]); // Trigger useEffect when cities or hasMore state changes
 
- 
   useEffect(() => {
     // Function to filter cities
     const filterCities = () => {
-      let filtered = cities; 
-      
+      let filtered = cities;
+
       // If search input is not empty, filter cities by name
       if (searchInput.trim() !== "") {
         filtered = filtered.filter((city) =>
@@ -133,7 +129,7 @@ const CityTable: React.FC = () => {
     // Function to sort cities
     const sortCities = () => {
       if (sortBy) {
-        // Create a copy of filtered cities array
+        // Creating a copy of filtered cities array
         const sorted = [...filteredCities].sort((a, b) => {
           // Compare cities based on selected column and order
           if (sortBy === "name") {
@@ -218,15 +214,32 @@ const CityTable: React.FC = () => {
     }
   };
 
-  // Function to toggle dropdown state
-  const handleDropdownToggle = () => {
-    setDropdownOpen(!dropdownOpen); // Toggle dropdown state
+  // Inside the CityTable component
+  const addToDashboard = (city: City) => {
+    const storedCities = localStorage.getItem("dashboardCities");
+    let dashboardCities: City[] = [];
+    if (storedCities) {
+      dashboardCities = JSON.parse(storedCities);
+    }
+    dashboardCities.push(city);
+    localStorage.setItem("dashboardCities", JSON.stringify(dashboardCities));
+    alert(`${city.name} has been added to the dashboard.`);
+  };
+
+  const handleDashboardButtonClick = () => {
+    navigate("/dashboard");
   };
 
   // Return the JSX for the CityTable component
   return (
     <div className="max-w-6xl mx-auto px-4 overflow-y-auto overflow-x-auto md:overflow-hidden">
       <h1 className="text-2xl font-bold mb-4 text-center">WEATHER APP</h1>
+      <button
+        onClick={handleDashboardButtonClick}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+      >
+        Open Weather Dashboard
+      </button>
       <div className="relative mb-4">
         {/* Input field for city search */}
         <input
@@ -297,6 +310,9 @@ const CityTable: React.FC = () => {
               <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ">
                 Population
               </th>
+              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ">
+               Action
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -321,6 +337,15 @@ const CityTable: React.FC = () => {
                 <td className="px-4 py-2 whitespace-nowrap">{city.timezone}</td>
                 <td className="px-4 py-2 whitespace-nowrap">
                   {city.population}
+                </td>
+                <td className="px-4 py-2 whitespace-nowrap">
+                  {/* Button to add city to dashboard */}
+                  <button
+                    onClick={() => addToDashboard(city)}
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
+                  >
+                    Add to Dashboard
+                  </button>
                 </td>
               </tr>
             ))}

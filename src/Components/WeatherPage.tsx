@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 
-// videos for different weather conditions
+// Importing video assets for different weather conditions
 import snowVideo from "../assets/Videos/snow.mp4";
 import rainyVideo from "../assets/Videos/rainy.mp4";
 import lightRainVideo from "../assets/Videos/light rain.mp4";
@@ -17,6 +17,7 @@ import clearSkyVideo from "../assets/Videos/clear.mp4";
 import defaultVideo from "../assets/Videos/default.mp4";
 import hazeVideo from "../assets/Videos/haze.mp4";
 
+// Interfaces for current weather data
 interface MainWeather {
   temp: number;
   humidity: number;
@@ -37,6 +38,7 @@ interface CurrentWeather {
   wind: Wind;
 }
 
+// Interfaces for forecast data
 interface ForecastMain {
   temp_min: number;
   temp_max: number;
@@ -58,6 +60,7 @@ interface ForecastData {
 }
 
 function WeatherPage() {
+  // State variables
   const [weatherData, setWeatherData] = useState<CurrentWeather | null>(null);
   const [forecastData, setForecastData] = useState<ForecastData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -66,11 +69,13 @@ function WeatherPage() {
   // Get the city name from the URL params
   const { cityName } = useParams<{ cityName: string }>();
 
+  // Fetch weather data and forecast data when component mounts
   useEffect(() => {
     const fetchWeatherData = async () => {
       try {
+        // Fetch current weather data
         const weatherResponse = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=0e0ca64278d9c08173974c0f7236f498&units=metric`
+          `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=YOUR_API_KEY&units=metric`
         );
         if (!weatherResponse.ok) {
           throw new Error("Failed to fetch weather data");
@@ -78,8 +83,9 @@ function WeatherPage() {
         const weatherData: CurrentWeather = await weatherResponse.json();
         setWeatherData(weatherData);
 
+        // Fetch forecast data
         const forecastResponse = await fetch(
-          `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=0e0ca64278d9c08173974c0f7236f498&units=metric`
+          `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=YOUR_API_KEY&units=metric`
         );
         if (!forecastResponse.ok) {
           throw new Error("Failed to fetch forecast data");
@@ -97,14 +103,17 @@ function WeatherPage() {
     fetchWeatherData();
   }, [cityName]);
 
+  // Render loading state while data is being fetched
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  // Render error state if there's an error fetching data
   if (error) {
     return <div>Error: {error}</div>;
   }
 
+  // Render if weather data or forecast data is not available
   if (!weatherData || !forecastData) {
     return <div>No weather data available</div>;
   }
@@ -160,8 +169,9 @@ function WeatherPage() {
       transition={{ duration: 0.5 }}
       className="relative"
     >
+      {/* Weather details container */}
       <div className="rounded-md mb-8 weather-card">
-        {/* weather details whole container */}
+        {/* Weather details text with video background */}
         <div className="weather-details h-80 relative flex items-center justify-center">
           {/* Video Background */}
           <video
@@ -174,9 +184,11 @@ function WeatherPage() {
             Your browser does not support the video tag.
           </video>
 
-          {/* Black shadow behind the weather details text */}
+          {/* Text content */}
           <div className="absolute inset-0 flex items-center justify-center">
+            {/* Weather details text */}
             <div className="text-center text-white z-10 p-4 rounded-md">
+              {/* Weather information */}
               <motion.h1
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -232,6 +244,7 @@ function WeatherPage() {
         </div>
       </div>
 
+      {/* Forecast cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {forecastData.list.map((item: ForecastList, index: number) => (
           <motion.div
@@ -242,6 +255,7 @@ function WeatherPage() {
             transition={{ duration: 0.5, delay: index * 0.1 }}
             className="bg-gray-100 p-4 rounded-md"
           >
+            {/* Forecast information */}
             <motion.h2
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
